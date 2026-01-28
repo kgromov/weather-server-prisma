@@ -2,11 +2,61 @@ import WeatherService from './weather.service.js'
 
 class WeatherController {
 
-    async getWeatherAtDay(req, res) {
-        try {
+    getYearsToShow(req, res) {
+        return WeatherController.handler(req, res, async () => await WeatherService.getYearsToShow());
+    }
+
+    getYearsBySeasonsTemperature(req, res) {
+        return WeatherController.handler(req, res, async () => {
+            return await WeatherService.getYearsBySeasonsTemperature();
+        });
+    }
+
+    getYearsByMonthsTemperature(req, res) {
+        return WeatherController.handler(req, res, async () => {
+            return await WeatherService.getYearsByMonthsTemperature();
+        });
+    }
+
+    getMaxTemperatureDays(req, res) {
+        return WeatherController.handler(req, res, async () => {
+            return await WeatherService.getMaxTemperatureDays();
+        });
+    }
+
+    getWeatherForToday(req, res) {
+        return WeatherController.handler(req, res, async () => {
+            return await WeatherService.getWeatherForToday();
+        });
+    }
+
+    getWeatherDayInRange(req, res) {
+        return WeatherController.handler(req, res, async () => {
             const day = new Date(req.params.day);
-            const weather = await WeatherService.getByDate(day);
-            return res.status(200).json(weather);
+            const years = new Date(req.params.day);
+            return await WeatherService.getAllByDay(day, years);
+        });
+    }
+
+    async getWeatherAtDay(req, res) {
+         try {
+             const day = new Date(req.params.day);
+             const weather = await WeatherService.getByDate(day);
+             return res.status(200).json(weather);
+         } catch (err) {
+             console.error(err);
+             return res.status(500).json({ error: err.message });
+         }
+        // return WeatherController.handler(req, res, async () => {
+        //     const day = new Date(req.params.day);
+        //     return await WeatherService.getByDate(day);
+        // });
+    }
+
+    static handler(req, res, fn) {
+        try {
+            const response = fn(req, res);
+            return res.status(200).json(response);
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: err.message });

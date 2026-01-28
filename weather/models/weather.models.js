@@ -1,4 +1,4 @@
-exports.WeatherMeasurementDto = class {
+export class WeatherMeasurementDto {
 
     constructor(hour, temperature) {
         this.hour = hour;
@@ -6,7 +6,7 @@ exports.WeatherMeasurementDto = class {
     }
 }
 
-exports.TemperatureMeasurementsDto = class {
+export class TemperatureMeasurementsDto {
 
     constructor(date, dailyMeasurements) {
         this.date = date;
@@ -26,17 +26,14 @@ exports.TemperatureMeasurementsDto = class {
     }
 }
 
-
-const StatusCode = {
+export const StatusCode = {
     SUCCESS: 200,
     FAILURE: 400
 }
 
-exports.SyncStatus = class {
+export class SyncStatus {
     constructor(code, message) {
         this.code = code;
         this.message = message;
     }
 }
-
-exports.StatusCode = StatusCode;
