@@ -37,28 +37,31 @@ class WeatherService {
 
     async getYearsByMonthsTemperature() {
         return prisma.$queryRaw`
-            SELECT MONTH(date) AS month,
-                   YEAR(date)  AS year,
-                   LEAST(
-                           morningTemperature,
-                           afternoonTemperature,
-                           eveningTemperature,
-                           nightTemperature
-                   ) AS minTemp,
-                   GREATEST(
-                           morningTemperature,
-                           afternoonTemperature,
-                           eveningTemperature,
-                           nightTemperature
-                   ) AS maxTemp,
-                   (
-                       morningTemperature +
-                       afternoonTemperature +
-                       eveningTemperature +
-                       nightTemperature
-                       ) / 4.0 AS avgTemp
-            FROM DailyTemperature
-            ORDER BY date DESC
+            SELECT DATE_FORMAT(CONCAT_WS('-', year, month, '-01'), '%M, %Y') as yearMonth,
+                   MIN(minTemp) as minTemp, MAX(maxTemp) as maxTemp, ROUND(AVG(avgTemp), 2) as avgTemp FROM
+                (SELECT MONTH(date) AS month,
+                        YEAR(date)  AS year,
+                        LEAST(
+                                morningTemperature,
+                                afternoonTemperature,
+                                eveningTemperature,
+                                nightTemperature
+                        )           AS minTemp,
+                        GREATEST(
+                                morningTemperature,
+                                afternoonTemperature,
+                                eveningTemperature,
+                                nightTemperature
+                        )           AS maxTemp,
+                        (
+                            morningTemperature +
+                            afternoonTemperature +
+                            eveningTemperature +
+                            nightTemperature
+                            ) / 4.0 AS avgTemp
+                 FROM DailyTemperature
+                 ORDER BY date DESC) AS months
+            GROUP BY month, year;
         `;
     }
 
