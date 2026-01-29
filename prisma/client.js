@@ -12,9 +12,9 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({adapter});
 prisma.$on('query', (e) => {
-    console.debug('Query: ' + e.query)
-    console.debug('Params: ' + e.params)
-    console.debug('Duration: ' + e.duration + 'ms')
+    console.log('Query: ' + e.query)
+    console.log('Params: ' + e.params)
+    console.log('Duration: ' + e.duration + 'ms')
 });
 prisma.$on('warn', (e) => {
     console.log(e);

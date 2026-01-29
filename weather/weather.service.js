@@ -8,14 +8,15 @@ class WeatherService {
         return prisma.dailyTemperature.findUnique({where: {date: date}});
     }
 
+    // Some mess with duplicated ids - seems prisma ORM can't translate result set properly
     async getAllByDay(date, numYears) {
-        console.log(`getAllByDay by date = ${date}, years = ${numYears}`);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
         return prisma.$queryRaw`
-          SELECT * FROM DailyTemperature
-          WHERE MONTH(date) = 1
-            AND DAY(date) = 15
-          ORDER BY date DESC
-          LIMIT ${numYears}
+            SELECT *
+            FROM DayTemperature 
+            WHERE MONTH(date) = ${month} AND DAY(date) = ${day}
+            ORDER BY date DESC
         `;
     }
 
@@ -26,18 +27,42 @@ class WeatherService {
     }
 
     async getYearsBySeasonsTemperature() {
-        throw new Error('Not implemented');
+        return prisma.$queryRaw`
+            SELECT *
+            FROM DayTemperature 
+            WHERE MONTH(date) = ${month} AND DAY(date) = ${day}
+            ORDER BY date DESC
+        `;
     }
 
     async getYearsByMonthsTemperature() {
-        throw new Error('Not implemented');
+        return prisma.$queryRaw`
+            SELECT MONTH(date) AS month,
+                   YEAR(date)  AS year,
+                   LEAST(
+                           morningTemperature,
+                           afternoonTemperature,
+                           eveningTemperature,
+                           nightTemperature
+                   ) AS minTemp,
+                   GREATEST(
+                           morningTemperature,
+                           afternoonTemperature,
+                           eveningTemperature,
+                           nightTemperature
+                   ) AS maxTemp,
+                   (
+                       morningTemperature +
+                       afternoonTemperature +
+                       eveningTemperature +
+                       nightTemperature
+                       ) / 4.0 AS avgTemp
+            FROM DailyTemperature
+            ORDER BY date DESC
+        `;
     }
 
     async getMaxTemperatureDays() {
-        throw new Error('Not implemented');
-    }
-
-    async getWeatherForToday() {
         throw new Error('Not implemented');
     }
 }

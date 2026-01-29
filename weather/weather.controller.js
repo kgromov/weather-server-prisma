@@ -26,7 +26,7 @@ class WeatherController {
 
     getWeatherForToday(req, res) {
         return WeatherController.handler(req, res, async () => {
-            return await WeatherService.getWeatherForToday();
+            return await WeatherService.getByDate(new Date());
         });
     }
 
@@ -39,23 +39,15 @@ class WeatherController {
     }
 
     async getWeatherAtDay(req, res) {
-         try {
-             const day = new Date(req.params.day);
-             const weather = await WeatherService.getByDate(day);
-             return res.status(200).json(weather);
-         } catch (err) {
-             console.error(err);
-             return res.status(500).json({ error: err.message });
-         }
-        // return WeatherController.handler(req, res, async () => {
-        //     const day = new Date(req.params.day);
-        //     return await WeatherService.getByDate(day);
-        // });
+        return WeatherController.handler(req, res, async () => {
+            const day = new Date(req.params.day);
+            return await WeatherService.getByDate(day);
+        });
     }
 
-    static handler(req, res, fn) {
+    static async handler(req, res, fn) {
         try {
-            const response = fn(req, res);
+            const response = await fn(req, res);
             return res.status(200).json(response);
         } catch (err) {
             console.error(err);
