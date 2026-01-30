@@ -18,9 +18,9 @@ class WeatherController {
         });
     }
 
-    getMaxTemperatureDays(req, res) {
+    getYearsTemperature(req, res) {
         return WeatherController.handler(req, res, async () => {
-            return await WeatherService.getMaxTemperatureDays();
+            return await WeatherService.getYearsTemperature();
         });
     }
 
